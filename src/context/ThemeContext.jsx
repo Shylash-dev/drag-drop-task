@@ -20,9 +20,10 @@ export const ThemeProvider = ({ children }) => {
     const toggleTheme = () => {
         setTheme((prev) => (prev === "light" ? "dark" : "light"));
     };
+    const [dropIndex, setDropIndex] = useState(null)
 
     return (
-        <ThemeContext.Provider value={{ theme, toggleTheme }}>
+        <ThemeContext.Provider value={{ theme, toggleTheme, setDropIndex, dropIndex }}>
             {children}
         </ThemeContext.Provider>
     );

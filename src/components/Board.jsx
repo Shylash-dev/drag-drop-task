@@ -1,19 +1,24 @@
 import React from "react";
 import Column from "./Column";
+import { useTheme } from "../context/ThemeContext";
 
 const Board = ({ tasks, setTasks, showToast }) => {
-    const handleDragStart = (e, task, from) => {
-        e.dataTransfer.setData("task", JSON.stringify({ task, from }));
+    const { dropIndex } = useTheme();
+
+    const handleDragStart = (e, task, from, index) => {
+        e.dataTransfer.setData("task", JSON.stringify({ task, from, index }));
     };
 
     const handleDrop = (e, to) => {
-        const { task, from, index } = JSON.parse(e.dataTransfer.getData("task"));
+        const { task, from } = JSON.parse(e.dataTransfer.getData("task"));
         if (from === to) return;
+
         const newTasks = { ...tasks };
         newTasks[from] = newTasks[from].filter((t) => t.id !== task.id);
-        // newTasks[to].push(task);
 
-        newTasks[to].splice(index, 0, task);
+        const insertIndex = typeof dropIndex === "number" ? dropIndex : newTasks[to].length;
+        newTasks[to].splice(insertIndex, 0, task);
+
         setTasks(newTasks);
         showToast("Task moved successfully");
     };

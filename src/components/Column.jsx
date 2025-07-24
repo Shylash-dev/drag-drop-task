@@ -1,7 +1,10 @@
 import React, { useState } from "react";
 import TaskCard from "./TaskCard";
+import { useTheme } from "../context/ThemeContext";
 
 const Column = ({ name, tasks, onDrop, onDragStart, setTasks, showToast }) => {
+    const { setDropIndex } = useTheme();
+
     const [newTask, setNewTask] = useState("");
     const [draggedTask, setDraggedTask] = useState(null);
 
@@ -27,23 +30,24 @@ const Column = ({ name, tasks, onDrop, onDragStart, setTasks, showToast }) => {
     const handleDragStart = (e, task, index) => {
         e.dataTransfer.setData("task", JSON.stringify({ task, from: name, index }));
         setDraggedTask({ task, index });
+        onDragStart(e, task, name, index); // Call parent drag start
     };
 
-    const handleDragOver = (e) => {
-        e.preventDefault(); // Required to allow drop
+    const handleDragOver = (e, index) => {
+        e.preventDefault();
+        setDropIndex(index);
     };
 
     const handleDrop = (e, index) => {
         e.preventDefault();
+        setDropIndex(index);
         const data = JSON.parse(e.dataTransfer.getData("task"));
-        if (data.from !== name) return; // Skip if dropped from other column
+        if (data.from !== name) return; // Skip reordering if from another column
 
         if (draggedTask) {
             const newList = [...tasks];
-            // Remove the dragged task
-            newList.splice(draggedTask.index, 1);
-            // Insert it at new position
-            newList.splice(index, 0, draggedTask.task);
+            newList.splice(draggedTask.index, 1); // Remove original
+            newList.splice(index, 0, draggedTask.task); // Insert at new index
 
             setTasks((prev) => ({
                 ...prev,
@@ -62,7 +66,7 @@ const Column = ({ name, tasks, onDrop, onDragStart, setTasks, showToast }) => {
                         key={task.id}
                         task={task}
                         onDragStart={(e) => handleDragStart(e, task, index)}
-                        onDragOver={handleDragOver}
+                        onDragOver={(e) => handleDragOver(e, index)}
                         onDrop={(e) => handleDrop(e, index)}
                         onDelete={() => deleteTask(task.id)}
                     />
