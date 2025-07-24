@@ -7,11 +7,13 @@ const Board = ({ tasks, setTasks, showToast }) => {
     };
 
     const handleDrop = (e, to) => {
-        const { task, from } = JSON.parse(e.dataTransfer.getData("task"));
+        const { task, from, index } = JSON.parse(e.dataTransfer.getData("task"));
         if (from === to) return;
         const newTasks = { ...tasks };
         newTasks[from] = newTasks[from].filter((t) => t.id !== task.id);
-        newTasks[to].push(task);
+        // newTasks[to].push(task);
+
+        newTasks[to].splice(index, 0, task);
         setTasks(newTasks);
         showToast("Task moved successfully");
     };

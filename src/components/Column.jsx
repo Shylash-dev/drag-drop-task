@@ -25,7 +25,7 @@ const Column = ({ name, tasks, onDrop, onDragStart, setTasks, showToast }) => {
     };
 
     const handleDragStart = (e, task, index) => {
-        e.dataTransfer.setData("task", JSON.stringify({ task, from: name }));
+        e.dataTransfer.setData("task", JSON.stringify({ task, from: name, index }));
         setDraggedTask({ task, index });
     };
 
